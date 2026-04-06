@@ -6,8 +6,15 @@
   "bin": {
     "create-sharyx-agent": "./dist/cli.js"
   },
+  "files": [
+    "dist",
+    "templates",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "fs-extra": "^11.1.1",

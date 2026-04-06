@@ -46,18 +46,30 @@ class OpenAILLM {
     async chat(messages, options) {
         const openai = await this.getSDK();
         const model = options?.model || this.config.model || 'gpt-4o-mini';
-        const completion = await openai.chat.completions.create({
-            model,
-            messages: messages,
-            temperature: options?.temperature ?? 0.7,
-            max_tokens: options?.maxTokens,
-            tools: options?.tools
-        });
-        const choice = completion.choices[0]?.message;
-        return {
-            text: choice?.content || '',
-            toolCalls: choice?.tool_calls
-        };
+        try {
+            const completion = await openai.chat.completions.create({
+                model,
+                messages: messages,
+                temperature: options?.temperature ?? 0.7,
+                max_tokens: options?.maxTokens,
+                tools: options?.tools
+            });
+            const choice = completion.choices[0]?.message;
+            return {
+                text: choice?.content || '',
+                toolCalls: choice?.tool_calls
+            };
+        }
+        catch (err) {
+            if (err.status === 401) {
+                console.error(`[Sharyx] ❌ OpenAI Error: Invalid API Key.`);
+                console.warn(`         Falling back to Mock Response to prevent crash.`);
+                return {
+                    text: `[FALLBACK] I heard you say: "${messages[messages.length - 1].content}". (OpenAI Key Invalid)`
+                };
+            }
+            throw err;
+        }
     }
 }
 exports.OpenAILLM = OpenAILLM;
