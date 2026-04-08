@@ -4,7 +4,7 @@
  * Build AI voice agents in 5 lines of code.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MockTTS = exports.MockSTT = exports.MockLLM = exports.ElevenLabsTTS = exports.GeminiLLM = exports.OpenAILLM = exports.DeepgramSTT = exports.Pipeline = exports.VoiceAgent = exports.createAgent = void 0;
+exports.MockTTS = exports.MockSTT = exports.MockLLM = exports.CartesiaTTS = exports.ElevenLabsTTS = exports.GeminiLLM = exports.OpenAILLM = exports.DeepgramSTT = exports.Pipeline = exports.VoiceAgent = exports.createAgent = void 0;
 // === TIER 1: Simple API (what 90% of people use) ===
 var simple_1 = require("./core/simple");
 Object.defineProperty(exports, "createAgent", { enumerable: true, get: function () { return simple_1.createAgent; } });
@@ -22,6 +22,8 @@ var gemini_1 = require("./providers/llm/gemini");
 Object.defineProperty(exports, "GeminiLLM", { enumerable: true, get: function () { return gemini_1.GeminiLLM; } });
 var elevenlabs_1 = require("./providers/tts/elevenlabs");
 Object.defineProperty(exports, "ElevenLabsTTS", { enumerable: true, get: function () { return elevenlabs_1.ElevenLabsTTS; } });
+var cartesia_1 = require("./providers/tts/cartesia");
+Object.defineProperty(exports, "CartesiaTTS", { enumerable: true, get: function () { return cartesia_1.CartesiaTTS; } });
 // === Mocks (for testing) ===
 var mock_llm_1 = require("./providers/llm/mock-llm");
 Object.defineProperty(exports, "MockLLM", { enumerable: true, get: function () { return mock_llm_1.MockLLM; } });

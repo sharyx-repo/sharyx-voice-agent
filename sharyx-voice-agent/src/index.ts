@@ -15,6 +15,7 @@ export { DeepgramSTT } from './providers/stt/deepgram';
 export { OpenAILLM } from './providers/llm/openai';
 export { GeminiLLM } from './providers/llm/gemini';
 export { ElevenLabsTTS } from './providers/tts/elevenlabs';
+export { CartesiaTTS } from './providers/tts/cartesia';
 
 // === Mocks (for testing) ===
 export { MockLLM } from './providers/llm/mock-llm';

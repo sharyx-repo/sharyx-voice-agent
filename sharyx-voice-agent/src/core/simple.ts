@@ -5,6 +5,7 @@ import { OpenAILLM } from '../providers/llm/openai';
 import { GeminiLLM } from '../providers/llm/gemini';
 import { DeepgramSTT } from '../providers/stt/deepgram';
 import { ElevenLabsTTS } from '../providers/tts/elevenlabs';
+import { CartesiaTTS } from '../providers/tts/cartesia';
 import { MockLLM } from '../providers/llm/mock-llm';
 import { MockSTT } from '../providers/stt/mock-stt';
 import { MockTTS } from '../providers/tts/mock-tts';
@@ -31,7 +32,15 @@ export function createAgent(config: SimpleAgentConfig = {}): VoiceAgent {
         },
     };
 
-    return new VoiceAgent(agentConfig);
+    const agent = new VoiceAgent(agentConfig);
+    
+    const llmName = (resolved.llm as any).constructor.name;
+    const ttsName = (resolved.tts as any).constructor.name;
+    const sttName = (resolved.stt as any).constructor.name;
+    
+    console.log(`[Sharyx] 🤖 Agent initialized with: ${llmName} (LLM), ${sttName} (STT), ${ttsName} (TTS)`);
+    
+    return agent;
 }
 
 function resolveProviders(config: SimpleAgentConfig) {
@@ -79,10 +88,17 @@ function resolveProviders(config: SimpleAgentConfig) {
         tts = config.tts as TtsProvider;
     } else {
         const ttsOptions = config.tts as { apiKey: string, provider?: string };
-        const apiKey = ttsOptions?.apiKey || process.env.ELEVENLABS_API_KEY;
+        const provider = ttsOptions?.provider;
+        const ttsApiKey = ttsOptions?.apiKey;
 
-        if (apiKey) {
-            tts = new ElevenLabsTTS({ apiKey, voiceId: config.voice });
+        if (provider === 'cartesia' && ttsApiKey) {
+            tts = new CartesiaTTS({ apiKey: ttsApiKey, voiceId: config.voice });
+        } else if (provider === 'elevenlabs' && ttsApiKey) {
+            tts = new ElevenLabsTTS({ apiKey: ttsApiKey, voiceId: config.voice });
+        } else if (process.env.CARTESIA_API_KEY) {
+            tts = new CartesiaTTS({ apiKey: process.env.CARTESIA_API_KEY, voiceId: config.voice });
+        } else if (ttsApiKey || process.env.ELEVENLABS_API_KEY) {
+            tts = new ElevenLabsTTS({ apiKey: ttsApiKey || process.env.ELEVENLABS_API_KEY!, voiceId: config.voice });
         } else {
             tts = new MockTTS();
         }

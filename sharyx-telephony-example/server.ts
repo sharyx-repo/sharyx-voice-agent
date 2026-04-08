@@ -53,6 +53,9 @@ wss.on('connection', (ws) => {
     sendStart() { /* Twilio specific noise reduction init could go here */ }
     sendClear() { ws.send(JSON.stringify({ event: 'clear', streamSid })); }
     sendMark(name: string) { ws.send(JSON.stringify({ event: 'mark', streamSid, mark: { name } })); }
+    hangup() { ws.close(); }
+    close(code?: number, reason?: string) { ws.close(code, reason); }
+    sendMessage(event: string, data: any) { ws.send(JSON.stringify({ event, ...data })); }
   };
 
   ws.on('message', (message: string) => {
@@ -63,7 +66,7 @@ wss.on('connection', (ws) => {
           streamSid = data.start.streamSid;
           console.log(`📱 Call started: ${streamSid}`);
           // Start Sharyx Pipeline
-          agent.handleSession(transport as any, { callSid: streamSid });
+          agent.handleSession(transport, { callSid: streamSid });
           break;
         case 'media':
           transport.emit('audio', { payload: data.media.payload });

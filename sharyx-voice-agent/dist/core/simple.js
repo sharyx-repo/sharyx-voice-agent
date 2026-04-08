@@ -7,6 +7,7 @@ const openai_1 = require("../providers/llm/openai");
 const gemini_1 = require("../providers/llm/gemini");
 const deepgram_1 = require("../providers/stt/deepgram");
 const elevenlabs_1 = require("../providers/tts/elevenlabs");
+const cartesia_1 = require("../providers/tts/cartesia");
 const mock_llm_1 = require("../providers/llm/mock-llm");
 const mock_stt_1 = require("../providers/stt/mock-stt");
 const mock_tts_1 = require("../providers/tts/mock-tts");
@@ -27,13 +28,21 @@ function createAgent(config = {}) {
             ...config.config,
         },
     };
-    return new voice_agent_1.VoiceAgent(agentConfig);
+    const agent = new voice_agent_1.VoiceAgent(agentConfig);
+    const llmName = resolved.llm.constructor.name;
+    const ttsName = resolved.tts.constructor.name;
+    const sttName = resolved.stt.constructor.name;
+    console.log(`[Sharyx] 🤖 Agent initialized with: ${llmName} (LLM), ${sttName} (STT), ${ttsName} (TTS)`);
+    return agent;
 }
 function resolveProviders(config) {
     // LLM Resolution: config.apiKey > config.llm.apiKey > process.env.OPENAI_API_KEY
     let llm;
     const apiKey = config.apiKey || config.llm?.apiKey || process.env.OPENAI_API_KEY;
-    if (config.llm && typeof config.llm.chat === 'function') {
+    if (config.llm === 'mock') {
+        llm = new mock_llm_1.MockLLM();
+    }
+    else if (config.llm && typeof config.llm.chat === 'function') {
         llm = config.llm;
     }
     else if (apiKey) {
@@ -56,7 +65,10 @@ function resolveProviders(config) {
     }
     // STT Resolution
     let stt;
-    if (config.stt && typeof config.stt.createLiveConnection === 'function') {
+    if (config.stt === 'mock') {
+        stt = new mock_stt_1.MockSTT();
+    }
+    else if (config.stt && typeof config.stt.createLiveConnection === 'function') {
         stt = config.stt;
     }
     else {
@@ -71,14 +83,27 @@ function resolveProviders(config) {
     }
     // TTS Resolution
     let tts;
-    if (config.tts && typeof config.tts.streamSpeech === 'function') {
+    if (config.tts === 'mock') {
+        tts = new mock_tts_1.MockTTS();
+    }
+    else if (config.tts && typeof config.tts.streamSpeech === 'function') {
         tts = config.tts;
     }
     else {
         const ttsOptions = config.tts;
-        const apiKey = ttsOptions?.apiKey || process.env.ELEVENLABS_API_KEY;
-        if (apiKey) {
-            tts = new elevenlabs_1.ElevenLabsTTS({ apiKey, voiceId: config.voice });
+        const provider = ttsOptions?.provider;
+        const ttsApiKey = ttsOptions?.apiKey;
+        if (provider === 'cartesia' && ttsApiKey) {
+            tts = new cartesia_1.CartesiaTTS({ apiKey: ttsApiKey, voiceId: config.voice });
+        }
+        else if (provider === 'elevenlabs' && ttsApiKey) {
+            tts = new elevenlabs_1.ElevenLabsTTS({ apiKey: ttsApiKey, voiceId: config.voice });
+        }
+        else if (process.env.CARTESIA_API_KEY) {
+            tts = new cartesia_1.CartesiaTTS({ apiKey: process.env.CARTESIA_API_KEY, voiceId: config.voice });
+        }
+        else if (ttsApiKey || process.env.ELEVENLABS_API_KEY) {
+            tts = new elevenlabs_1.ElevenLabsTTS({ apiKey: ttsApiKey || process.env.ELEVENLABS_API_KEY, voiceId: config.voice });
         }
         else {
             tts = new mock_tts_1.MockTTS();

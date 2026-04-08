@@ -75,15 +75,15 @@ export interface SimpleAgentConfig {
     stt?: SttProvider | {
         apiKey: string;
         provider?: 'deepgram' | 'sarvam';
-    };
+    } | 'mock';
     llm?: LlmProvider | {
         apiKey: string;
         provider?: 'openai' | 'gemini';
-    };
+    } | 'mock';
     tts?: TtsProvider | {
         apiKey: string;
         provider?: 'elevenlabs' | 'cartesia';
-    };
+    } | 'mock';
     config?: Partial<SessionConfig>;
 }
 export interface SimulateResult {
