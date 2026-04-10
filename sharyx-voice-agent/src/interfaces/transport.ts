@@ -4,7 +4,7 @@ export interface VoiceTransport extends EventEmitter {
   /**
    * Send TTS audio chunk to the caller.
    */
-  sendAudio(base64: string): void;
+  sendAudio(payload: string | Buffer): void;
 
   /**
    * Signal the start of TTS playback.
@@ -45,5 +45,7 @@ export interface CallMetadata {
   from?: string;
   to?: string;
   direction?: 'inbound' | 'outbound';
+  sampleRate?: number;
+  encoding?: string;
   [key: string]: any;
 }

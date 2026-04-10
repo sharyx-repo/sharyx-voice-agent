@@ -12,4 +12,6 @@ export interface TelephonyAdapter {
     }>;
     /** Hang up a call by SID */
     hangup(callSid: string): Promise<void>;
+    /** Handle a WebSocket connection (for media streams) */
+    handleWebSocket(ws: any): void;
 }

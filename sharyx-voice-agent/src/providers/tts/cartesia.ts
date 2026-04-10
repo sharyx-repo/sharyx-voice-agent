@@ -8,8 +8,10 @@ export class CartesiaTTS implements TtsProvider {
   constructor(private config: { apiKey: string, voiceId?: string }) {}
 
   async *streamSpeech(text: string, options?: TtsOptions): AsyncIterable<Buffer> {
-    const voiceId = options?.voiceId || this.config.voiceId || '694f9389-aac1-45b6-b726-9d9369183238'; // Example default Cartesia voice
-    
+    const voiceId = options?.voiceId || this.config.voiceId || '694f9389-aac1-45b6-b726-9d9369183238';
+    const sampleRate = options?.sampleRate || 16000;
+    const encoding = options?.encoding || 'pcm_s16le';
+
     const response = await fetch('https://api.cartesia.ai/tts/bytes', {
         method: 'POST',
         headers: {
@@ -26,14 +28,18 @@ export class CartesiaTTS implements TtsProvider {
             },
             output_format: {
                 container: 'raw',
-                encoding: 'pcm_s16le',
-                sample_rate: 16000
+                encoding: encoding,
+                sample_rate: sampleRate
             }
         })
     });
 
+    console.log(`[CartesiaTTS] Response: ${response.status} ${response.statusText}`);
+
     if (!response.ok || !response.body) {
-        throw new Error(`Cartesia HTTP error: ${response.status} ${response.statusText}`);
+        const errorBody = await response.text();
+        console.error(`[CartesiaTTS] Error Body: ${errorBody}`);
+        throw new Error(`Cartesia HTTP error: ${response.status} ${response.statusText} - ${errorBody}`);
     }
 
     // Convert fetch ReadableStream to AsyncIterable for Node.js

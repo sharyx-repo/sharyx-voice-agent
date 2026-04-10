@@ -39,10 +39,7 @@ function resolveProviders(config) {
     // LLM Resolution: config.apiKey > config.llm.apiKey > process.env.OPENAI_API_KEY
     let llm;
     const apiKey = config.apiKey || config.llm?.apiKey || process.env.OPENAI_API_KEY;
-    if (config.llm === 'mock') {
-        llm = new mock_llm_1.MockLLM();
-    }
-    else if (config.llm && typeof config.llm.chat === 'function') {
+    if (config.llm && typeof config.llm.chat === 'function') {
         llm = config.llm;
     }
     else if (apiKey) {
@@ -65,10 +62,7 @@ function resolveProviders(config) {
     }
     // STT Resolution
     let stt;
-    if (config.stt === 'mock') {
-        stt = new mock_stt_1.MockSTT();
-    }
-    else if (config.stt && typeof config.stt.createLiveConnection === 'function') {
+    if (config.stt && typeof config.stt.createLiveConnection === 'function') {
         stt = config.stt;
     }
     else {
@@ -83,10 +77,7 @@ function resolveProviders(config) {
     }
     // TTS Resolution
     let tts;
-    if (config.tts === 'mock') {
-        tts = new mock_tts_1.MockTTS();
-    }
-    else if (config.tts && typeof config.tts.streamSpeech === 'function') {
+    if (config.tts && typeof config.tts.streamSpeech === 'function') {
         tts = config.tts;
     }
     else {

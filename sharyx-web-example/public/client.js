@@ -24,12 +24,22 @@ async function startCall() {
     callBtn.classList.add('active');
     status.innerText = 'Connecting...';
 
-    // 1. Setup WebSocket
+    // 1. Initialize AudioContext early for AutoPlay policy and fast start
+    try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+        if (audioContext.state === 'suspended') {
+            await audioContext.resume();
+        }
+    } catch(e) {
+        console.error('Failed to initialize AudioContext:', e);
+    }
+
+    // 2. Setup WebSocket
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     ws = new WebSocket(`${protocol}//${window.location.host}`);
     
     ws.onopen = () => {
-        status.innerText = '💻 Connected. Speak now!';
+        status.innerText = '💻 Connected. Setting up microphone...';
         setupMicrophone();
     };
 
@@ -43,24 +53,33 @@ async function startCall() {
             nextPlayTime = audioContext ? audioContext.currentTime : 0;
         }
     };
+
+    ws.onerror = (err) => {
+        status.innerText = '❌ Connection Error.';
+        console.error('WS Error:', err);
+    };
 }
 
 async function setupMicrophone() {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    
-    // Force 16kHz sample rate if supported, otherwise resample
-    try {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
-    } catch(e) {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        status.innerText = '❌ Browser does not support microphone access.';
+        return;
     }
-    
-    const source = audioContext.createMediaStreamSource(stream);
-    
-    // Use a buffer size that's a power of 2
-    processor = audioContext.createScriptProcessor(4096, 1, 1);
-    source.connect(processor);
-    processor.connect(audioContext.destination);
+
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        status.innerText = '💻 Connected. Speak now!';
+        
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+        }
+        
+        const source = audioContext.createMediaStreamSource(stream);
+        
+        // Use a buffer size that's a power of 2
+        processor = audioContext.createScriptProcessor(4096, 1, 1);
+        source.connect(processor);
+        processor.connect(audioContext.destination);
 
     processor.onaudioprocess = (e) => {
         const inputData = e.inputBuffer.getChannelData(0);
@@ -85,6 +104,15 @@ async function setupMicrophone() {
             ws.send(JSON.stringify({ event: 'audio', payload: base64 }));
         }
     };
+    } catch (err) {
+        console.error('Microphone access denied:', err);
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+            status.innerText = '❌ Microphone permission denied. Please allow access in browser settings.';
+        } else {
+            status.innerText = `❌ Error: ${err.message}`;
+        }
+        stopCall();
+    }
 }
 
 function playAudio(base64) {
@@ -125,7 +153,15 @@ function stopCall() {
     isCalling = false;
     callBtn.innerText = '📞 Click to Call';
     callBtn.classList.remove('active');
-    status.innerText = 'Call ended.';
-    if (ws) ws.close();
-    if (audioContext) audioContext.close();
+    if (status.innerText.startsWith('💻')) {
+        status.innerText = 'Call ended.';
+    }
+    if (ws) {
+        ws.close();
+        ws = null;
+    }
+    if (audioContext) {
+        audioContext.close();
+        audioContext = null;
+    }
 }
