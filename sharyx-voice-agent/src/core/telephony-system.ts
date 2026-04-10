@@ -39,9 +39,30 @@ export class TelephonyService {
       const data: any = await response.json();
       if (!response.ok) throw new Error(`Plivo API Error: ${data.error || data.message}`);
       return { callSid: data.request_uuid };
+    } else if (provider === 'twilio') {
+      const { accountSid, authToken, from } = this.config.twilio || {};
+      if (!accountSid || !authToken || !from) throw new Error('Twilio credentials missing');
+
+      const params = new URLSearchParams();
+      params.append('To', to);
+      params.append('From', from);
+      params.append('Url', answerUrl);
+      params.append('Method', 'POST');
+
+      const response = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Calls.json`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${Buffer.from(`${accountSid}:${authToken}`).toString('base64')}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params.toString(),
+      });
+
+      const data: any = await response.json();
+      if (!response.ok) throw new Error(`Twilio API Error: ${data.message || response.statusText}`);
+      return { callSid: data.sid };
     } else {
-      // Twilio implementation would go here
-      throw new Error('Twilio outbound call not yet implemented in TelephonyService');
+      throw new Error(`Unsupported provider: ${provider}`);
     }
   }
 }

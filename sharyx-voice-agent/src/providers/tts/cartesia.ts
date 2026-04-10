@@ -10,7 +10,11 @@ export class CartesiaTTS implements TtsProvider {
   async *streamSpeech(text: string, options?: TtsOptions): AsyncIterable<Buffer> {
     const voiceId = options?.voiceId || this.config.voiceId || '694f9389-aac1-45b6-b726-9d9369183238';
     const sampleRate = options?.sampleRate || 16000;
-    const encoding = options?.encoding || 'pcm_s16le';
+    // Cartesia doesn't support mulaw natively, fallback to L16 and let adapter convert if needed
+    let encoding = options?.encoding || 'pcm_s16le';
+    if (encoding === 'mulaw' || encoding === 'pcm_mulaw') {
+        encoding = 'pcm_s16le';
+    }
 
     const response = await fetch('https://api.cartesia.ai/tts/bytes', {
         method: 'POST',

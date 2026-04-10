@@ -44,7 +44,7 @@ class DeepgramSTT {
                 connection = await deepgram.listen.v1.connect({
                     model: options?.model || 'nova-2',
                     language: options?.language || 'en-US',
-                    encoding: options?.encoding === 'mulaw' ? 'mulaw' : 'linear16',
+                    encoding: (options?.encoding === 'mulaw' || options?.encoding === 'pcm_mulaw') ? 'mulaw' : 'linear16',
                     sample_rate: options?.sampleRate || 16000,
                     smart_format: true,
                     interim_results: true,

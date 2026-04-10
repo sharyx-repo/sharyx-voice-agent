@@ -3,6 +3,7 @@ import { VoiceAgent } from '../core/voice-agent';
 import { TelephonyAdapter } from '../interfaces/adapter';
 import { VoiceTransport, CallMetadata } from '../interfaces/transport';
 import { WebSocket } from 'ws';
+import { linear16ToMulaw } from '../utils/audio';
 
 export class TwilioAdapter implements TelephonyAdapter {
   public readonly name = 'twilio';
@@ -47,14 +48,35 @@ export class TwilioAdapter implements TelephonyAdapter {
     console.log('☎️ Twilio Media Stream detected');
     let streamSid: string;
 
+    let audioBuffer = Buffer.alloc(0);
+    const FRAME_SIZE = 320; // 20ms of 8kHz Linear16 PCM
+
     const transport = new class extends EventEmitter implements VoiceTransport {
-      sendAudio(base64: string) {
+      sendAudio(payload: string | Buffer) {
         if (ws.readyState === ws.OPEN && streamSid) {
-          ws.send(JSON.stringify({ event: 'media', streamSid, media: { payload: base64 } }));
+          const newChunk = Buffer.isBuffer(payload) ? payload : Buffer.from(payload, 'base64');
+          audioBuffer = Buffer.concat([audioBuffer, newChunk]);
+
+          while (audioBuffer.length >= FRAME_SIZE) {
+            const frame = audioBuffer.subarray(0, FRAME_SIZE);
+            audioBuffer = audioBuffer.subarray(FRAME_SIZE);
+
+            // Convert L16 -> Mu-law
+            const mulawFrame = linear16ToMulaw(frame);
+            const base64 = mulawFrame.toString('base64');
+
+            if (Math.random() < 0.05) {
+              console.log(`📤 Dispatching Mu-law chunk to Twilio (${base64.length} chars). Buffer: ${audioBuffer.length} bytes.`);
+            }
+            ws.send(JSON.stringify({ event: 'media', streamSid, media: { payload: base64 } }));
+          }
         }
       }
       sendStart() {}
-      sendClear() { ws.send(JSON.stringify({ event: 'clear', streamSid })); }
+      sendClear() { 
+        audioBuffer = Buffer.alloc(0);
+        ws.send(JSON.stringify({ event: 'clear', streamSid })); 
+      }
       sendMark(name: string) { ws.send(JSON.stringify({ event: 'mark', streamSid, mark: { name } })); }
       hangup() { ws.close(); }
       close() { ws.close(); }
@@ -63,15 +85,26 @@ export class TwilioAdapter implements TelephonyAdapter {
     ws.on('message', (message: string) => {
       try {
         const data = JSON.parse(message);
+        console.log(`📥 Twilio Event: ${data.event}`);
+
         switch (data.event) {
           case 'start':
+            console.log('📥 Twilio Start Data:', JSON.stringify(data, null, 2));
             streamSid = data.start.streamSid;
-            this.agent!.handleSession(transport, { callSid: streamSid });
+            this.agent!.handleSession(transport, { 
+              callSid: streamSid,
+              sampleRate: 8000,
+              encoding: 'mulaw' // STT hears Mu-law, Cartesia falls back to L16, we convert back to Mu-law
+            });
             break;
           case 'media':
+            if (Math.random() < 0.01) {
+              console.log(`📥 Inbound media payload length: ${data.media.payload.length}`);
+            }
             transport.emit('audio', { payload: data.media.payload });
             break;
           case 'stop':
+            console.log('📥 Twilio Stop Event received');
             transport.emit('close');
             break;
         }

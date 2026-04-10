@@ -36,6 +36,11 @@ const telephony = new TelephonyService({
     authId: process.env.PLIVO_AUTH_ID!,
     authToken: process.env.PLIVO_AUTH_TOKEN!,
     from: process.env.PLIVO_PHONE_NUMBER!
+  },
+  twilio: {
+    accountSid: process.env.TWILIO_ACCOUNT_SID!,
+    authToken: process.env.TWILIO_AUTH_TOKEN!,
+    from: process.env.TWILIO_PHONE_NUMBER!
   }
 });
 
@@ -45,7 +50,8 @@ app.post('/trigger-call', async (req, res) => {
   try {
     console.log(`🚀 Triggering outbound call to ${to} via ${provider}...`);
     const domain = process.env.NGROK_DOMAIN || `https://${req.headers.host}`;
-    const result = await telephony.initiateOutboundCall(provider as any, to, `${domain}/plivo/xml`);
+    const answerPath = provider === 'plivo' ? '/plivo/xml' : '/twilio/twiml';
+    const result = await telephony.initiateOutboundCall(provider as any, to, `${domain}${answerPath}`);
     res.json({ success: true, callSid: result.callSid });
   } catch (err: any) {
     console.error(`❌ Call Trigger Error: ${err.message}`);
@@ -53,7 +59,7 @@ app.post('/trigger-call', async (req, res) => {
   }
 });
 
-// 2. Specialized Plivo Controller
+// 2. Specialized Telephony Controllers
 app.post('/plivo/xml', (req, res) => {
   res.type('text/xml');
   const host = req.headers['x-forwarded-host'] || req.headers.host;
@@ -64,17 +70,29 @@ app.post('/plivo/xml', (req, res) => {
     streamUrl += `${separator}token=${process.env.WS_SHARED_SECRET}`;
   }
 
-  // Fail-safe: Hardcode l16 until library symlink is confirmed
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-    <Stream bidirectional="true" sampleRate="8000" encoding="l16">${streamUrl}</Stream>
-    <Wait length="3600" />
-</Response>`.trim();
+  const xml = TelephonyControllers.generatePlivoXml(streamUrl);
   
   console.log('------------------------------');
-  console.log(`✉️ GENERATED PLIVO XML (HARDCODED L16 FIX):\n${xml}`);
+  console.log(`✉️ GENERATED PLIVO XML:\n${xml}`);
   console.log('------------------------------');
   res.send(xml);
+});
+
+app.post('/twilio/twiml', (req, res) => {
+  res.type('text/xml');
+  const host = req.headers['x-forwarded-host'] || req.headers.host;
+  let domain = process.env.NGROK_DOMAIN || host;
+  
+  // Clean domain and ensure wss://
+  domain = domain.replace(/^https?:\/\//, '');
+  const streamUrl = process.env.TWILIO_MEDIA_STREAM_URL || `wss://${domain}/media-stream`;
+  
+  const twiml = TelephonyControllers.generateTwilioTwiML(streamUrl);
+  
+  console.log('------------------------------');
+  console.log(`✉️ GENERATED TWILIO TWIML:\n${twiml}`);
+  console.log('------------------------------');
+  res.send(twiml);
 });
 
 // Serve UI
