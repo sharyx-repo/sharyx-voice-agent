@@ -8,8 +8,8 @@ export { createAgent } from './core/simple';
 
 // === TIER 2: Advanced API (power users) ===
 export { VoiceAgent } from './core/voice-agent';
-export { Pipeline } from './core/pipeline';
-export { TelephonyService, TelephonyControllers, VoicePipelineService } from './core/telephony-system';
+export { VoiceOrchestrator } from './providers/orchestrator/voice-orchestrator';
+export { TelephonyService, TelephonyControllers } from './core/telephony-system';
 
 // === Built-in Providers (no extra installs) ===
 export { DeepgramSTT } from './providers/stt/deepgram';
@@ -22,6 +22,13 @@ export { CartesiaTTS } from './providers/tts/cartesia';
 export { TwilioAdapter } from './adapters/twilio';
 export { PlivoAdapter } from './adapters/plivo';
 export { WebCallAdapter } from './adapters/webcall';
+export { TelephonyManager } from './adapters/telephony-manager';
+
+// === Agent Brain & Workflows ===
+export { IntentDetector } from './providers/orchestrator/intent-detector';
+
+// === Utils & Eval ===
+export { EvalLogger } from './utils/eval-logger';
 
 // === Mocks (for testing) ===
 export { MockLLM } from './providers/llm/mock-llm';

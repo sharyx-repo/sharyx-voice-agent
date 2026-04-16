@@ -1,6 +1,6 @@
 {
   "name": "sharyx-voice-agent",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Simple Mode AI Voice Agent SDK",
   "license": "MIT",
   "main": "dist/index.js",
