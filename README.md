@@ -16,6 +16,12 @@ The "magic wand" that sets up a new project in seconds.
 - **Role**: Generates a pre-configured folder with templates.
 - **Running**: `npx create-sharyx-agent <project-name>`
 
+### 3. [sharyx-web-example](./sharyx-web-example) (Web Demo)
+Complete web implementation showing real-time audio streaming from the browser.
+
+### 4. [sharyx-telephony-example](./sharyx-telephony-example) (Twilio Demo)
+Connect your AI agent to a phone number using Twilio Media Streams.
+
 ---
 
 ## 🛠️ Local Development
@@ -24,7 +30,7 @@ If you want to contribute to the core SDK or add new CLI templates:
 
 1. **Clone the repo**:
    ```bash
-   git clone https://github.com/your-username/sharyx-voice-agent.git
+   git clone https://github.com/sharyx-agent/sharyx-voice-agent.git
    ```
 
 2. **Install Dependencies**:
@@ -48,4 +54,4 @@ If you want to contribute to the core SDK or add new CLI templates:
 This repo is set up for professional NPM publishing. Each subfolder has its own `package.json` and `.npmignore` to ensure only the built code is uploaded.
 
 ## 📄 License
-Both the SDK and the CLI are licensed under the **MIT License**.
+This project is licensed under the **MIT License**. See the [LICENSE](../LICENSE) file for details.

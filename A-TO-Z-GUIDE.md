@@ -25,7 +25,7 @@ The **Pipeline** is the conductor. It takes the audio from the Adapter and coord
 These are the external services that do the heavy lifting.
 - **STT**: Deepgram (Fastest speech-to-text).
 - **LLM**: OpenAI / Google Gemini (The reasoning engine).
-- **TTS**: ElevenLabs (High-quality natural voices).
+- **TTS**: ElevenLabs / Cartesia (High-quality, low-latency natural voices).
 
 ---
 
@@ -33,7 +33,7 @@ These are the external services that do the heavy lifting.
 
 Here is exactly what happens when a user speaks:
 
-1.  **User Peaks**: Raw audio data is sent through the **Adapter**.
+1.  **User Speaks**: Raw audio data is sent through the **Adapter**.
 2.  **STT Processing**: The **Pipeline** streams this audio to the STT provider.
 3.  **Transcript Alert**: As soon as the STT provider detects a finished sentence, it sends back a **Transcript**.
 4.  **LLM Reasoning**: The Pipeline takes that transcript and sends it to the **LLM** (e.g., GPT-4).
@@ -54,6 +54,9 @@ You have two options:
     OPENAI_API_KEY=sk-your-key
     DEEPGRAM_API_KEY=your-key
     ELEVENLABS_API_KEY=your-key
+    CARTESIA_API_KEY=your-key
+    TWILIO_ACCOUNT_SID=your-key
+    PLIVO_AUTH_ID=your-key
     ```
 2.  **Code Configuration**: Pass them directly to the function.
     ```javascript
