@@ -29,15 +29,27 @@ A production-ready example of how to build a real-time AI voice assistant for th
     OPENAI_API_KEY=sk-your-key
     DEEPGRAM_API_KEY=your-key
     ELEVENLABS_API_KEY=your-key
+    CARTESIA_API_KEY=your-key
+    CARTESIA_VOICE_ID=your-key
+    CARTESIA_MODEL_ID=your-key
+    TWILIO_ACCOUNT_SID=your-key
+    TWILIO_AUTH_TOKEN=your-key
+    TWILIO_PHONE_NUMBER=your-key
+    PLIVO_AUTH_ID=your-key
+    PLIVO_AUTH_TOKEN=your-key
+    PLIVO_PHONE_NUMBER=your-key
+    WS_SHARED_SECRET=your-key
+    NGROK_DOMAIN=your-key
     ```
 
 3.  **Run the server**:
     ```bash
-    npm start
+    npm run start
     ```
 
 4.  **Open in Browser**:
-    Visit `http://localhost:3000` and click "Call".
+    Visit `http://localhost:3000` and click "Call",
+    Visit `http://localhost:8080/index.html` and click "Call",
 
 ---
 
