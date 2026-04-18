@@ -5,7 +5,9 @@ import { VoiceTransport, CallMetadata } from '../interfaces/transport';
 export declare class VoiceAgent extends EventEmitter {
     private config;
     private adapters;
-    private pipeline;
+    private orchestrator;
+    private telephony;
+    private evalLogger;
     private app;
     constructor(config: VoiceAgentConfig);
     /**

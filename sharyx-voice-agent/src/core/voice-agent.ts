@@ -6,18 +6,24 @@ import { SttProvider } from '../interfaces/stt';
 import { TtsProvider } from '../interfaces/tts';
 import { TelephonyAdapter } from '../interfaces/adapter';
 import { VoiceTransport, CallMetadata } from '../interfaces/transport';
-import { Pipeline } from './pipeline';
+import { VoiceOrchestrator } from '../providers/orchestrator/voice-orchestrator';
 
+import { TelephonyManager } from '../adapters/telephony-manager';
+import { EvalLogger } from '../utils/eval-logger';
 import * as readline from 'readline';
 
 export class VoiceAgent extends EventEmitter {
     private adapters: TelephonyAdapter[] = [];
-    private pipeline: Pipeline;
+    private orchestrator: VoiceOrchestrator;
+    private telephony: TelephonyManager;
+    private evalLogger: EvalLogger;
     private app: any;
 
     constructor(private config: VoiceAgentConfig) {
         super();
-        this.pipeline = new Pipeline(this.config);
+        this.orchestrator = new VoiceOrchestrator(this.config);
+        this.telephony = new TelephonyManager();
+        this.evalLogger = new EvalLogger();
     }
 
     /**
@@ -25,6 +31,7 @@ export class VoiceAgent extends EventEmitter {
      */
     use(adapter: TelephonyAdapter): this {
         adapter.register(this);
+        this.telephony.registerAdapter(adapter);
         if (this.app) {
             adapter.setupRoutes(this.app);
         }
@@ -75,7 +82,7 @@ export class VoiceAgent extends EventEmitter {
      * Main entry point to handle a voice session (from an adapter).
      */
     async handleSession(transport: VoiceTransport, metadata?: CallMetadata) {
-        return this.pipeline.run(transport, metadata);
+        return this.orchestrator.run(transport, metadata);
     }
 
     /**
