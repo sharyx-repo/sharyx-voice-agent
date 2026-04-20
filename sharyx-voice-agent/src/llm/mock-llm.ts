@@ -1,4 +1,4 @@
-import { LlmProvider, ChatMessage, LlmChunk } from '../../interfaces/llm';
+import { LlmProvider, ChatMessage, LlmChunk } from '../interfaces/llm';
 
 /**
  * A mock LLM for offline testing.

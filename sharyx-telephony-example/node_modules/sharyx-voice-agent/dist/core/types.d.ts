@@ -54,6 +54,7 @@ export interface SessionConfig {
      */
     summarization?: boolean;
 }
+import { AgentWorkflow } from '../interfaces/workflow';
 export interface VoiceAgentConfig {
     stt: SttProvider;
     llm: LlmProvider;
@@ -61,6 +62,7 @@ export interface VoiceAgentConfig {
     systemPrompt?: string;
     firstMessage?: string;
     tools?: any[];
+    workflows?: AgentWorkflow[];
     config?: SessionConfig;
     debug?: boolean;
 }

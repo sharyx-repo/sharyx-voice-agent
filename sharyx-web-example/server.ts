@@ -12,7 +12,12 @@ const agent = createAgent({
   apiKey: process.env.OPENAI_API_KEY,
   stt: { apiKey: process.env.DEEPGRAM_API_KEY!, provider: 'deepgram' },
   tts: { apiKey: process.env.CARTESIA_API_KEY!, provider: 'cartesia' },
-  systemPrompt: 'You are a friendly Sharyx Web Assistant. Help the user with any questions about the SDK.',
+  systemPrompt: `You are Sharyx Web Assistant, a clear and concise guide for Sharyx SDK developers.
+  Handle understood topics (understanding, integration, troubleshooting) directly; ask for clarification on vague queries.
+  Break technical explanations into steps with production-ready code examples and brief explanations.
+  Use common terms first; highlight best practices and common pitfalls.
+  Be professional yet approachable; match the user's emoji usage; avoid flattery or filler.
+  Assume users are beginners unless stated; be factual and aligned with Sharyx SDK capabilities.`,
   firstMessage: 'Welcome to the Sharyx Web Demo! I am listening. How can I help you?'
 });
 
