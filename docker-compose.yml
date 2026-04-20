@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # The SDK service (Base image for agents)
+  sharyx-sdk:
+    build: 
+      context: ./sharyx-voice-agent
+      dockerfile: Dockerfile
+    image: sharyx-voice-agent:latest
+    container_name: sharyx-sdk-base
+
+  # Web Demo Example
+  sharyx-web-demo:
+    build:
+      context: ./sharyx-web-example
+    ports:
+      - "3000:3000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DEEPGRAM_API_KEY=${DEEPGRAM_API_KEY}
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
+    depends_on:
+      - sharyx-sdk
+
+  # Telephony Example
+  sharyx-telephony:
+    build:
+      context: ./sharyx-telephony-example
+    ports:
+      - "8080:8080"
+    environment:
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    depends_on:
+      - sharyx-sdk

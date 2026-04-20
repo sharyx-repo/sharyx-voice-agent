@@ -6,7 +6,7 @@ import { SttProvider } from '../interfaces/stt';
 import { TtsProvider } from '../interfaces/tts';
 import { TelephonyAdapter } from '../interfaces/adapter';
 import { VoiceTransport, CallMetadata } from '../interfaces/transport';
-import { VoiceOrchestrator } from '../providers/orchestrator/voice-orchestrator';
+import { VoiceOrchestrator } from '../orchestrator/voice-orchestrator';
 
 import { TelephonyManager } from '../adapters/telephony-manager';
 import { EvalLogger } from '../utils/eval-logger';

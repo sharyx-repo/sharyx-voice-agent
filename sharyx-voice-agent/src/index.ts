@@ -8,15 +8,15 @@ export { createAgent } from './core/simple';
 
 // === TIER 2: Advanced API (power users) ===
 export { VoiceAgent } from './core/voice-agent';
-export { VoiceOrchestrator } from './providers/orchestrator/voice-orchestrator';
+export { VoiceOrchestrator } from './orchestrator/voice-orchestrator';
 export { TelephonyService, TelephonyControllers } from './core/telephony-system';
 
 // === Built-in Providers (no extra installs) ===
-export { DeepgramSTT } from './providers/stt/deepgram';
-export { OpenAILLM } from './providers/llm/openai';
-export { GeminiLLM } from './providers/llm/gemini';
-export { ElevenLabsTTS } from './providers/tts/elevenlabs';
-export { CartesiaTTS } from './providers/tts/cartesia';
+export { DeepgramSTT } from './stt/deepgram';
+export { OpenAILLM } from './llm/openai';
+export { GeminiLLM } from './llm/gemini';
+export { ElevenLabsTTS } from './tts/elevenlabs';
+export { CartesiaTTS } from './tts/cartesia';
 
 // === Telephony Adapters ===
 export { TwilioAdapter } from './adapters/twilio';
@@ -25,15 +25,15 @@ export { WebCallAdapter } from './adapters/webcall';
 export { TelephonyManager } from './adapters/telephony-manager';
 
 // === Agent Brain & Workflows ===
-export { IntentDetector } from './providers/orchestrator/intent-detector';
+export { IntentDetector } from './orchestrator/intent-detector';
 
 // === Utils & Eval ===
 export { EvalLogger } from './utils/eval-logger';
 
 // === Mocks (for testing) ===
-export { MockLLM } from './providers/llm/mock-llm';
-export { MockSTT } from './providers/stt/mock-stt';
-export { MockTTS } from './providers/tts/mock-tts';
+export { MockLLM } from './llm/mock-llm';
+export { MockSTT } from './stt/mock-stt';
+export { MockTTS } from './tts/mock-tts';
 
 // === Interfaces (for writing custom providers) ===
 export type { SttProvider, LiveSttConnection, SttOptions } from './interfaces/stt';
