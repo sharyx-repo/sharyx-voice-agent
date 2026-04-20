@@ -27,13 +27,26 @@ export { TelephonyManager } from './adapters/telephony-manager';
 // === Agent Brain & Workflows ===
 export { IntentDetector } from './providers/orchestrator/intent-detector';
 
-// === Utils & Eval ===
+// === Business Tools & Integrations ===
+export { googleCalendarTools } from './tools/google-calendar';
+export { hubspotTools } from './tools/hubspot-crm';
+
+// === Notification Channels ===
+export { WhatsAppChannel } from './channels/whatsapp-channel';
+
+// === Observability & Telemetry ===
 export { EvalLogger } from './utils/eval-logger';
+export { SharyxTelemetry } from './utils/telemetry';
+export type { TelemetryProvider, MetricEvent, ErrorEvent } from './interfaces/telemetry';
 
 // === Mocks (for testing) ===
 export { MockLLM } from './llm/mock-llm';
 export { MockSTT } from './stt/mock-stt';
 export { MockTTS } from './tts/mock-tts';
+
+// === Memory & Persistence ===
+export { InMemoryMemoryStore } from './memory/memory-store';
+export { RedisMemoryStore } from './memory/redis-store';
 
 // === Interfaces (for writing custom providers) ===
 export type { SttProvider, LiveSttConnection, SttOptions } from './interfaces/stt';

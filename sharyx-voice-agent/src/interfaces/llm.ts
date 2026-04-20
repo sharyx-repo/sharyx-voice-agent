@@ -24,14 +24,26 @@ export interface LlmOptions {
   tools?: any[];
 }
 
+/**
+ * Interface for Large Language Model providers.
+ * Implement this to add support for new models (Anthropic, Local LLMs, etc.)
+ */
 export interface LlmProvider {
   /**
    * Stream a chat completion.
+   * Useful for real-time voice applications to reduce latency.
+   * 
+   * @param messages - conversation history
+   * @param options - model configuration and tools
    */
   streamChat(messages: ChatMessage[], options?: LlmOptions): AsyncIterable<LlmChunk>;
 
   /**
    * Single-shot completion.
+   * Useful for simulations, summaries, or non-realtime tasks.
+   * 
+   * @param messages - conversation history
+   * @param options - model configuration and tools
    */
   chat(messages: ChatMessage[], options?: LlmOptions): Promise<{ text: string; toolCalls?: any[] }>;
 }

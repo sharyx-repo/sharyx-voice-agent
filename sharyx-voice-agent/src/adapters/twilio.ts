@@ -4,10 +4,18 @@ import { TelephonyAdapter } from '../interfaces/adapter';
 import { VoiceTransport, CallMetadata } from '../interfaces/transport';
 import { WebSocket } from 'ws';
 import { linear16ToMulaw } from '../utils/audio';
+import { verifyTwilioSignature } from '../utils/security';
+
+export interface TwilioAdapterConfig {
+  validate?: boolean;
+  authToken?: string;
+}
 
 export class TwilioAdapter implements TelephonyAdapter {
   public readonly name = 'twilio';
   private agent?: VoiceAgent;
+
+  constructor(private config: TwilioAdapterConfig = {}) {}
 
   register(agent: VoiceAgent): void {
     this.agent = agent;
@@ -18,6 +26,28 @@ export class TwilioAdapter implements TelephonyAdapter {
      * TwiML Endpoint for Twilio Webhooks
      */
     app.post('/twiml', (req: any, res: any) => {
+      // Production Security: Verify Twilio Signature
+      if (this.config.validate) {
+        const signature = req.headers['x-twilio-signature'];
+        const authToken = this.config.authToken || process.env.TWILIO_AUTH_TOKEN;
+        
+        if (!signature || !authToken) {
+          console.warn('[Sharyx] 🛡️ Twilio validation failed: Missing signature or token.');
+          return res.status(403).send('Forbidden: Missing signature');
+        }
+
+        // Reconstruct URL
+        const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+        const host = req.headers['host'];
+        const url = `${protocol}://${host}${req.originalUrl || req.url}`;
+
+        const isValid = verifyTwilioSignature(authToken, signature, url, req.body);
+        if (!isValid) {
+          console.warn('[Sharyx] 🛡️ Twilio validation failed: Invalid signature.');
+          return res.status(403).send('Forbidden: Invalid signature');
+        }
+      }
+
       res.type('text/xml');
       res.send(`
         <Response>

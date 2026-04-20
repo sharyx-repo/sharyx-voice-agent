@@ -22,6 +22,10 @@ export class InMemoryMemoryStore implements MemoryStore {
         return session;
     }
 
+    saveSession(session: CallSession): void {
+        this.sessions.set(session.sessionId, session);
+    }
+
     deleteSession(sessionId: string): void {
         this.sessions.delete(sessionId);
     }

@@ -68,11 +68,15 @@ export interface SessionConfig {
 }
 
 import { AgentWorkflow } from '../interfaces/workflow';
+import { MemoryStore } from '../interfaces/memory';
+import { TelemetryProvider } from '../interfaces/telemetry';
 
 export interface VoiceAgentConfig {
   stt: SttProvider;
   llm: LlmProvider;
   tts: TtsProvider;
+  memory?: MemoryStore;
+  telemetry?: TelemetryProvider;
   systemPrompt?: string;
   firstMessage?: string;
   tools?: any[];

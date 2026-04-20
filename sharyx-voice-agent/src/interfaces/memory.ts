@@ -1,9 +1,12 @@
 export interface MemoryStore {
   /** Get or create a session for a call */
-  getSession(sessionId: string): CallSession;
+  getSession(sessionId: string): Promise<CallSession> | CallSession;
+
+  /** Update session data (e.g., adding messages) */
+  saveSession(session: CallSession): Promise<void> | void;
 
   /** Destroy session data when the call ends */
-  deleteSession(sessionId: string): void;
+  deleteSession(sessionId: string): Promise<void> | void;
 }
 
 export interface CallSession {

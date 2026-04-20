@@ -12,6 +12,15 @@ import { TelephonyManager } from '../adapters/telephony-manager';
 import { EvalLogger } from '../utils/eval-logger';
 import * as readline from 'readline';
 
+/**
+ * Sharyx Voice Agent Core Class.
+ * This class orchestrates the connection between telephony adapters, 
+ * LLM intelligence, STT transcription, and TTS synthesis.
+ * 
+ * @example
+ * const agent = new VoiceAgent({ ...config });
+ * agent.use(new TwilioAdapter()).start();
+ */
 export class VoiceAgent extends EventEmitter {
     private adapters: TelephonyAdapter[] = [];
     private orchestrator: VoiceOrchestrator;
