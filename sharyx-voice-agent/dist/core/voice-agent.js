@@ -35,30 +35,23 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VoiceAgent = void 0;
 const events_1 = require("events");
-const voice_orchestrator_1 = require("../providers/orchestrator/voice-orchestrator");
-const telephony_manager_1 = require("../adapters/telephony-manager");
-const eval_logger_1 = require("../utils/eval-logger");
+const pipeline_1 = require("./pipeline");
 const readline = __importStar(require("readline"));
 class VoiceAgent extends events_1.EventEmitter {
     config;
     adapters = [];
-    orchestrator;
-    telephony;
-    evalLogger;
+    pipeline;
     app;
     constructor(config) {
         super();
         this.config = config;
-        this.orchestrator = new voice_orchestrator_1.VoiceOrchestrator(this.config);
-        this.telephony = new telephony_manager_1.TelephonyManager();
-        this.evalLogger = new eval_logger_1.EvalLogger();
+        this.pipeline = new pipeline_1.Pipeline(this.config);
     }
     /**
      * Register a telephony adapter (plugin).
      */
     use(adapter) {
         adapter.register(this);
-        this.telephony.registerAdapter(adapter);
         if (this.app) {
             adapter.setupRoutes(this.app);
         }
@@ -106,7 +99,7 @@ class VoiceAgent extends events_1.EventEmitter {
      * Main entry point to handle a voice session (from an adapter).
      */
     async handleSession(transport, metadata) {
-        return this.orchestrator.run(transport, metadata);
+        return this.pipeline.run(transport, metadata);
     }
     /**
      * Text-based simulation of a conversation.

@@ -48,7 +48,7 @@ class DeepgramSTT {
                     sample_rate: options?.sampleRate || 16000,
                     smart_format: true,
                     interim_results: true,
-                    endpointing: 500 // Increased from 300ms to 500ms to allow for natural mid-sentence pauses.
+                    endpointing: 300
                 });
                 // Register event handlers BEFORE connecting
                 connection.on('open', () => {
