@@ -3,14 +3,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createAgent = createAgent;
 const voice_agent_1 = require("./voice-agent");
 const defaults_1 = require("./defaults");
-const openai_1 = require("../providers/llm/openai");
-const gemini_1 = require("../providers/llm/gemini");
-const deepgram_1 = require("../providers/stt/deepgram");
-const elevenlabs_1 = require("../providers/tts/elevenlabs");
-const cartesia_1 = require("../providers/tts/cartesia");
-const mock_llm_1 = require("../providers/llm/mock-llm");
-const mock_stt_1 = require("../providers/stt/mock-stt");
-const mock_tts_1 = require("../providers/tts/mock-tts");
+const openai_1 = require("../llm/openai");
+const gemini_1 = require("../llm/gemini");
+const deepgram_1 = require("../stt/deepgram");
+const elevenlabs_1 = require("../tts/elevenlabs");
+const cartesia_1 = require("../tts/cartesia");
+const mock_llm_1 = require("../llm/mock-llm");
+const mock_stt_1 = require("../stt/mock-stt");
+const mock_tts_1 = require("../tts/mock-tts");
 /**
  * Simplified factory to create a Voice Agent with minimal configuration.
  */

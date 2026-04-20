@@ -1,4 +1,4 @@
-import { TtsProvider, TtsOptions } from '../../interfaces/tts';
+import { TtsProvider, TtsOptions } from '../interfaces/tts';
 
 /**
  * A mock TTS provider for offline testing.

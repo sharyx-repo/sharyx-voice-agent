@@ -1,4 +1,4 @@
-import { SttProvider, LiveSttConnection, SttOptions } from '../../interfaces/stt';
+import { SttProvider, LiveSttConnection, SttOptions } from '../interfaces/stt';
 import { EventEmitter } from 'events';
 
 class MockSttConnection extends EventEmitter implements LiveSttConnection {

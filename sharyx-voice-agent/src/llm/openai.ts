@@ -1,4 +1,4 @@
-import { LlmProvider, ChatMessage, LlmChunk, LlmOptions } from '../../interfaces/llm';
+import { LlmProvider, ChatMessage, LlmChunk, LlmOptions } from '../interfaces/llm';
 
 /**
  * OpenAI LLM Provider.
