@@ -16,8 +16,12 @@
   },
   "dependencies": {
     "@deepgram/sdk": "^5.0.0",
+    "@hubspot/api-client": "^11.0.0",
     "axios": "^1.15.0",
     "dotenv": "^16.3.1",
+    "google-auth-library": "^9.0.0",
+    "googleapis": "^126.0.0",
+    "ioredis": "^5.3.0",
     "openai": "^4.104.0",
     "ws": "^8.14.2"
   },
